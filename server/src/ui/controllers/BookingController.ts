@@ -1,14 +1,9 @@
 import createHttpError from "http-errors";
 import { StatusCodes } from "http-status-codes";
-import { Route, Tags, Post, Get, Put, Delete, Body, Header, Queries, Path } from "tsoa";
+import { Route, Tags, Post, Body } from "tsoa";
 import { prisma } from "../../databases/prisma/prisma.js";
 import type { CreateBookingValidator } from "../validators/Bookings/CreateBookingValidator.js";
 import type { Booking } from '../../generated/prisma/client.js';
-
-export class VenueResponse {
-  id!: string;
-  name!: string;
-}
 
 @Route("v1/bookings")
 @Tags('Bookings API')

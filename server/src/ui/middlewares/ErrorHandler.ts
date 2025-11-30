@@ -5,7 +5,7 @@ export class ErrorHandler {
   static handle (err: any, req: Request, res: Response, next: NextFunction) {
     console.log('Error Message: ', err.message);
     console.log("Url          : ", req.originalUrl);
-    console.log(err);
+    // console.log(err);
     if (req.body) console.log('req.body: ', req.body);
     if (req.query) console.log('req.query: ', req.query);
     if (req.params) console.log('req.params: ', req.params);

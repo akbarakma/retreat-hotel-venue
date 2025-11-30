@@ -1,65 +1,152 @@
-import Image from "next/image";
+"use client";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Link from "next/link";
 
 export default function Home() {
+  const [venues, setVenues] = useState([]);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(5);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const [filterColumn, setFilterColumn] = useState("location");
+  const [filterQuery, setFilterQuery] = useState("");
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+  const fetchVenues = async () => {
+    const res = await axios.get(`${API_URL}/venues/list`, {
+      params: {
+        page,
+        limit,
+        [filterColumn]: filterQuery || undefined,
+      },
+    });
+
+    const venuesData = res.data.content.data;
+    const pagination = res.data.content.paginationMeta;
+
+    setVenues(venuesData);
+    setTotalPages(pagination.totalPage);
+  };
+
+  useEffect(() => {
+    fetchVenues();
+  }, [page]);
+
+  const applyFilter = () => {
+    setPage(1);
+    fetchVenues();
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="p-8 max-w-2xl mx-auto space-y-6">
+      <h1 className="text-2xl font-semibold">Retreat Venue List</h1>
+
+      <div className="flex gap-3 items-center">
+        <select
+          value={filterColumn}
+          onChange={(e) => {
+            setFilterColumn(e.target.value);
+            setFilterQuery("");
+          }}
+          className="border p-2 rounded"
+        >
+          <option value="location">Location</option>
+          <option value="capacity">Capacity (≥)</option>
+          <option value="price">Price (≤)</option>
+        </select>
+
+        {filterColumn === "capacity" ? (
+          <input
+            type="number"
+            value={filterQuery}
+            onChange={(e) => setFilterQuery(e.target.value)}
+            placeholder="Capacity ≥ ..."
+            className="border p-2 rounded flex-1"
+          />
+        ) : filterColumn === "price" ? (
+          <input
+            type="number"
+            value={filterQuery}
+            onChange={(e) => setFilterQuery(e.target.value)}
+            placeholder="Price ≤ ..."
+            className="border p-2 rounded flex-1"
+          />
+        ) : (
+          <input
+            type="text"
+            value={filterQuery}
+            onChange={(e) => setFilterQuery(e.target.value)}
+            placeholder="Search..."
+            className="border p-2 rounded flex-1"
+          />
+        )}
+
+        <button
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          onClick={applyFilter}
+        >
+          Filter
+        </button>
+      </div>
+
+      <div className="space-y-4">
+        {venues.length === 0 ? (
+          <h2>Loading ...</h2>
+        ) : (
+          venues.map((data: any) => (
+            <div
+              key={data.id}
+              className="border rounded-2xl p-5 shadow-sm flex justify-between items-center hover:shadow-md transition"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+              <div>
+                <p className="font-semibold text-lg">{data.name}</p>
+                <p className="text-sm text-gray-500">📍 {data.location}</p>
+                <p className="text-sm text-gray-500">👥 Capacity: {data.capacity}</p>
+                <p className="text-sm text-gray-500">💵 Price: ${data.price}</p>
+              </div>
+              {data.capacity === 0 ? (
+                <button
+                  className="px-4 py-2 rounded-xl bg-gray-400 text-white cursor-not-allowed"
+                  disabled
+                >
+                  Full
+                </button>
+              ) : (
+                <Link
+                  href={`/venues/${data.id}`}
+                  className="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700"
+                >
+                  Book
+                </Link>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-center gap-4 mt-6">
+        <button
+          disabled={page === 1}
+          onClick={() => setPage(page - 1)}
+          className="px-3 py-1 border rounded disabled:opacity-40"
+        >
+          Prev
+        </button>
+
+        <span>
+          Page {page} / {totalPages}
+        </span>
+
+        <button
+          disabled={page === totalPages}
+          onClick={() => setPage(page + 1)}
+          className="px-3 py-1 border rounded disabled:opacity-40"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }

@@ -1,14 +1,9 @@
-import createHttpError from "http-errors";
-import { StatusCodes } from "http-status-codes";
-import { Route, Tags, Post, Get, Put, Delete, Body, Header, Queries, Path } from "tsoa";
+import { Route, Tags, Get, Queries } from "tsoa";
 import type { GetAllVenuesValidator } from "../validators/Venues/GetAllVenuesValidator.js";
 import { prisma } from "../../databases/prisma/prisma.js";
 import { PaginationHelper } from "../../helpers/PaginationHelper.js";
-
-export class VenueResponse {
-  id!: string;
-  name!: string;
-}
+import type { Venue } from '../../generated/prisma/client.js';
+import type { IPaginationMeta } from "../../types/CommonTypes.js";
 
 @Route("v1/venues")
 @Tags('Venues API')
@@ -16,7 +11,7 @@ export class VenueController {
   constructor() {}
 
   @Get('list')
-  public async getAllVenues(@Queries() query: GetAllVenuesValidator): Promise<{ data: any[]; count: number }> {
+  public async getAllVenues(@Queries() query: GetAllVenuesValidator): Promise<{ data: Venue[], paginationMeta: IPaginationMeta }> {
     const pagination = PaginationHelper.sorter(query.orderBy ?? '+id');
     const { offset, limit } = PaginationHelper.getOffsetLimit(query.page, query.limit);
     const whereObject: Record<string, any> = {
@@ -53,9 +48,14 @@ export class VenueController {
       where: whereObject,
     });
 
+    const venuesDataCount = await prisma.venue.count({
+      where: whereObject,
+    });
+    const paginationMeta = PaginationHelper.generateMeta(query.page, query.limit, venuesDataCount);
+
     return {
       data: venuesData,
-      count: 0,
+      paginationMeta: paginationMeta,
     };
   }
 }
