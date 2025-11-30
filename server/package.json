@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:dev": "nodemon dist/index.js",
+    "start:dev": "npx nodemon dist/index.js",
     "build:dev": "tsc --watch --preserveWatchOutput",
     "dev": "concurrently \"npm:build:dev\" \"npm:start:dev\"",
     "build": "tsc",
@@ -24,6 +24,7 @@
     "concurrently": "^9.2.1",
     "nodemon": "^3.1.11",
     "prisma": "^7.0.1",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   },
   "dependencies": {

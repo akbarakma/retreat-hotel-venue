@@ -4,7 +4,8 @@ export class PaginationHelper {
   static camelToSnakeCase = (str: string) => str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 
   public static sorter(sort: string): object {
-    const sorts: any = [];
+    if (sort == '') return {};
+    const sorts: any = {};
     const sortStrings = sort.split(',');
 
     for (const item of sortStrings) {
@@ -16,7 +17,7 @@ export class PaginationHelper {
         sortMethod = 'asc';
       }
       sortString = sortString.substr(1);
-      sorts.push([this.camelToSnakeCase(sortString), sortMethod]);
+      sorts[sortString] = sortMethod;
     }
 
     return sorts;

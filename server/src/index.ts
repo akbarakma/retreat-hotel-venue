@@ -17,10 +17,6 @@ async function bootstrap(prefix: string) {
 
   console.log(`NODE_ENV = ${process.env.NODE_ENV}`);
 
-  // init database
-  await initDatabase();
-  console.log('Database initialized');
-
   if (process.env.NODE_ENV === 'production') {
     // Init things that is for production only
   }
@@ -63,19 +59,6 @@ async function bootstrap(prefix: string) {
   app.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
   });
-}
-
-const initDatabase = async () => {
-  if (process.env.NODE_ENV === 'production') {
-    // DBService.initialize({
-    //   connectionString: String(process.env.POSTGRES_DB_CONNECTION_STRING_PRODUCTION),
-    // });
-  } else {
-    console.log("TEST INIT DATABASE");
-    // DBService.initialize({
-    //   connectionString: String(process.env.POSTGRES_DB_CONNECTION_STRING),
-    // });
-  }
 }
 
 bootstrap('v1');

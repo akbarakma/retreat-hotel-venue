@@ -5,13 +5,20 @@ import { Example } from "tsoa";
 export class GetAllVenuesValidator {
   @Example(1)
   page: number;
-  @Example(10)
+  @Example(5)
   limit: number;
+  /**
+   * Order the results by a field.
+   * Examples:
+   * - "+name" + for ascending
+   * - "-price" - for descending
+   * - default: "+id"
+   */
   orderBy?: string;
   location?: string;
-  capacity?: string;
-  price?: string;
-  venueID?: string;
+  capacity?: number;
+  price?: number;
+  venueId?: number;
   
   static getAllQuery(request: Request) {
     const querySchema = Joi.object({
@@ -22,7 +29,7 @@ export class GetAllVenuesValidator {
       limit: Joi
         .number()
         .max(50)
-        .default(10),
+        .default(5),
       orderBy: Joi
         .string(),
       location: Joi
@@ -37,10 +44,9 @@ export class GetAllVenuesValidator {
         .number()
         .optional()
         .default(0),
-      venueID: Joi
-        .string()
-        .optional()
-        .allow("")
+      venueId: Joi
+        .number()
+        .optional(),
     });
     const query = request.query;
     const result = querySchema.validate(query);
