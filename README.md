@@ -15,6 +15,8 @@ cd retreat-hotel-venue/server
 ```
 
 ### 2. Install dependencies
+Dont forget to create .env in server root folder based on .env-example
+and change your cred accordingly
 ```bash
 npm install
 ```
@@ -41,7 +43,9 @@ You can access the swagger docs in http://localhost:3000/docs (assuming you are 
 
 ### 5. Running the Client App
 
-Create a new terminal and cd into the client folder and run this command
+Create a new terminal and cd into the client folder and run this command and
+dont forget to create .env in client root folder based on .env-example
+and change your cred accordingly
 ```bash
 npm install
 
