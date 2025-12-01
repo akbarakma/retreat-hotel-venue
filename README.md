@@ -2,6 +2,12 @@
 
 This is a Retreat Take Home Assignment
 
+Thankfully I have time to deploy it so you can access it online.
+I used Railway for the server app, and Vercel for the client app
+
+- Client App: [https://retreat-hotel-venue-prod.vercel.app/](https://retreat-hotel-venue-prod.vercel.app/)
+- Server App: [https://retreat-hotel-venue-production.up.railway.app/docs/](https://retreat-hotel-venue-production.up.railway.app/docs/)
+
 ## Setup Instructions for Retreat Venue List App
 
 ### Prerequisites
