@@ -26,6 +26,30 @@ export class BookingController {
 
     const newCapacity = venueData.capacity - body.attendeeCount;
 
+    // Validate if request time already exist
+    const conflictBookingTime = await prisma.booking.findFirst({
+      where: {
+        venueId: venueData.id,
+        isDeleted: false,
+        AND: [
+          {
+            startDate: {
+              lte: body.endDate,
+            },
+          },
+          {
+            endDate: {
+              gte: body.startDate,
+            },
+          },
+        ],
+      },
+    });
+
+    if (conflictBookingTime) {
+      throw createHttpError(StatusCodes.BAD_REQUEST, 'The time you set is already booked');
+    }
+
     // Update venue capacity after create booking
     const [bookingData, _]: [Booking, any] = await prisma.$transaction([
       prisma.booking.create({
