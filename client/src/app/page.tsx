@@ -30,6 +30,7 @@ export default function Home() {
   };
 
   useEffect(() => {
+    setVenues([]);
     fetchVenues();
   }, [page]);
 
